@@ -1,0 +1,37 @@
+{
+    "executionRoleArn": "arn:aws:iam::458631299885:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+        {
+            "name": "ecs-multi-stage-canary",
+            "image": "<ImageURI>",
+            "essential": true,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-group": "/ecs/multi-stage-canary",
+                  "awslogs-region": "eu-west-1",
+                  "awslogs-stream-prefix": "dev"
+                }
+              },
+            "portMappings": [
+                {
+                    "hostPort": 80,
+                    "protocol": "tcp",
+                    "containerPort": 80
+                }
+            ]
+        }
+    ],
+    "requiresCompatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "runtimePlatform": {
+        "operatingSystemFamily": "LINUX",
+        "cpuArchitecture": "ARM64"
+    },
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512",
+    "family": "ecs-multi-stage-canary"
+}

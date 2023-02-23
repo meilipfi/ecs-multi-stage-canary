@@ -1,0 +1,42 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:Abort*",
+                "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
+            ],
+            "Resource": [
+                "arn:aws:s3:::ecsmultistagecanarystack-ecscanarypipelineartifac-*",
+                "arn:aws:s3:::ecsmultistagecanarystack-ecscanarypipelineartifac-*/*"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": "sts:AssumeRole",
+            "Resource": [
+                "arn:aws:iam::458631299885:role/EcsMultiStageCanaryStack-EcsCanaryPipeline*"
+            ],
+            "Effect": "Allow"
+        }
+    ]
+}
