@@ -1,5 +1,5 @@
 {
-    "executionRoleArn": "arn:aws:iam::458631299885:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::<aws_account_id>:role/ecsTaskExecutionRole",
     "containerDefinitions": [
         {
             "name": "ecs-multi-stage-canary",

@@ -10,6 +10,8 @@ import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 // external imports
 import { ImageRepository } from '@cloudcomponents/cdk-container-registry';
 import { EcsDeploymentConfig } from '@cloudcomponents/cdk-blue-green-container-deployment';
+import * as taskDefinitionTemplateFile from '../assets/taskdef-tmpl.json';
+import * as fs from 'fs';
 
 // cdk imports
 import * as cdk from 'aws-cdk-lib';
@@ -26,7 +28,6 @@ interface EcsCanaryDeploymentStackProps extends cdk.NestedStackProps {
 
 // iam for cicd
 export class DeploymentRoles extends Construct {
-  public pipelineRole: iam.Role;
   public codeDeployRole: iam.Role;
   public lifecycleHookLambdaRole: iam.Role;
   constructor(scope: Construct, id: string,) {
@@ -132,6 +133,9 @@ export class EcsCanaryDeploymentStack extends cdk.NestedStack {
       'functions/stable_deployment_hook',
       deploymentRoles.lifecycleHookLambdaRole
     );
+
+    // update files in ./assets
+    this.updateAssets()
 
     // repositories
     const ecsCanaryRepository = new codecommit.Repository(this, 'EcsCanaryRepository', {
@@ -253,5 +257,11 @@ export class EcsCanaryDeploymentStack extends cdk.NestedStack {
       deploymentGroupName: `${id}DeploymentGroup`,
     });
     return deploymentGroup
+  }
+  private updateAssets() {
+    const regExp = /(?<=::).*?(?=:)/ // match everything between "::" and ":" (account id in ARN)
+    var taskDefinitionTemplateString = JSON.stringify(taskDefinitionTemplateFile);
+    var taskDefinitionString = taskDefinitionTemplateString.replace(regExp, cdk.Stack.of(this).account);
+    fs.writeFileSync('./assets/taskdef.json', taskDefinitionString, );
   }
 }
