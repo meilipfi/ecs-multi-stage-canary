@@ -45,12 +45,12 @@ export class EcsStack extends cdk.NestedStack {
     const logGroup = new logs.LogGroup(this, 'EcsLogGroup', { logGroupName: '/ecs/multi-stage-canary', removalPolicy: cdk.RemovalPolicy.DESTROY, });
 
     // latest service
-    this.latestEcsService = this.createEcsService(mainCluster, 'amazon/amazon-ecs-sample', 'latest', 2);
+    this.latestEcsService = this.createEcsService(mainCluster, 'nginx', 'latest', 2);
     this.latestEcsService.attachToApplicationTargetGroup(props.networking.latestTargetGroupA);
     this.latestEcsService.connections.allowFrom(props.networking.alb, ec2.Port.tcp(80));
 
     // stable service
-    this.stableEcsService = this.createEcsService(mainCluster, 'amazon/amazon-ecs-sample', 'stable', 0);
+    this.stableEcsService = this.createEcsService(mainCluster, 'nginx', 'stable', 0);
     this.stableEcsService.attachToApplicationTargetGroup(props.networking.stableTargetGroupA);
     this.stableEcsService.connections.allowFrom(props.networking.alb, ec2.Port.tcp(80));
 
@@ -76,6 +76,10 @@ export class EcsStack extends cdk.NestedStack {
       cpu: '256',
       memoryMiB: '512',
       networkMode: ecs.NetworkMode.AWS_VPC,
+      runtimePlatform: {
+        operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+        cpuArchitecture: (process.arch.startsWith("arm")) ? ecs.CpuArchitecture.ARM64 : ecs.CpuArchitecture.X86_64
+      },
     });
     const containerLatest = taskDefinitionLatest.addContainer(`${id}-container`, {
       image: ecs.ContainerImage.fromRegistry(containerImage),

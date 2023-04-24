@@ -9,7 +9,7 @@
                 "logDriver": "awslogs",
                 "options": {
                   "awslogs-group": "/ecs/multi-stage-canary",
-                  "awslogs-region": "eu-west-1",
+                  "awslogs-region": "<aws_region>",
                   "awslogs-stream-prefix": "dev"
                 }
               },
@@ -28,7 +28,7 @@
     ],
     "runtimePlatform": {
         "operatingSystemFamily": "LINUX",
-        "cpuArchitecture": "ARM64"
+        "cpuArchitecture": "<cpu_architecture>"
     },
     "networkMode": "awsvpc",
     "cpu": "256",

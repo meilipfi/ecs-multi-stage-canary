@@ -144,6 +144,7 @@ export class EcsCanaryDeploymentStack extends cdk.NestedStack {
     });
     const imageRepository = new ImageRepository(this, 'ImageRepository', {
       forceDelete: true,
+      repositoryName: 'ecs-canary-image-repository'
     });
 
     // pipeline
@@ -259,9 +260,18 @@ export class EcsCanaryDeploymentStack extends cdk.NestedStack {
     return deploymentGroup
   }
   private updateAssets() {
-    const regExp = /(?<=::).*?(?=:)/ // match everything between "::" and ":" (account id in ARN)
+    
     var taskDefinitionTemplateString = JSON.stringify(taskDefinitionTemplateFile);
-    var taskDefinitionString = taskDefinitionTemplateString.replace(regExp, cdk.Stack.of(this).account);
+    
+    const regExp = /(?<=::).*?(?=:)/; // match everything between "::" and ":" (account id in ARN)
+    var taskDefinitionString = taskDefinitionTemplateString.replace(
+      regExp, cdk.Stack.of(this).account);
+
+    var taskDefinitionString = taskDefinitionString.replace("<aws_region>", cdk.Stack.of(this).region);
+
+    var cpuArch = (process.arch.startsWith("arm")) ? "ARM64" : "X86_64";
+    var taskDefinitionString = taskDefinitionString.replace("<cpu_architecture>", cpuArch);
+    
     fs.writeFileSync('./assets/taskdef.json', taskDefinitionString, );
   }
 }
